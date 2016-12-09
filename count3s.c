@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     }
   }
 
-  printf("Number of 3s %d, MyID %d\n", myCount,myID);
+  printf("Number of 3s %d %d\n", myCount,myID);
 
   //Costom MPI-reduce()
   level = 1;
@@ -111,3 +111,23 @@ int main(int argc, char **argv)
   MPI_Finalize();
   return 0;
 }
+/*
+83542
+83532
+83751
+83371
+83559
+83714
+83400
+83093
+84022
+83780
+83963
+83878
+83760
+84058
+83703
+84004
+
+
+*/
