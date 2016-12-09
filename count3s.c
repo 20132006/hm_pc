@@ -4,18 +4,19 @@
 #include <stdlib.h>
 
 double start_time, stop_time;
+int globalCount,myCount;
+int *myArray;
+int length_per_process;
+int level;
 
 int main(int argc, char **argv)
 {
-  int myCount;
   int* data;
-  int m, n, myID, p, j, i, numProcs, globalCount;
+  int  n, myID, p, j, i, numProcs;
   int RootProcess=0;
   //Added by Alibek-
-  int length_per_process=0;
-  int *sub_data;
-  int *myArray;
-  int level;
+  length_per_process=0;
+  
   //-----------------
   MPI_Status status;
 
@@ -87,8 +88,6 @@ int main(int argc, char **argv)
     level = level*2;
   }
   */
-  myCount=0;
-  globalCount=0;
   //Do the actual work
   for (i=0;i<length_per_process;i++)
   {
