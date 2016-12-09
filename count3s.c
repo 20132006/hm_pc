@@ -41,21 +41,18 @@ int main(int argc, char **argv)
     // data generation
     srandom(0);
     // Make sure that n is a multiple of p
-    data = (int *)malloc(n*sizeof(int));
-    for(p=0; p<numProcs-1; p++)
+    for(p=1; p<numProcs; p++)
     {
       for (i=0;i<length_per_process;i++)
       {
         myArray[i] = random() % 100 + 1;
-        data[j] = myArray[i];
         ++j;
       }
-      MPI_Send(myArray, length_per_process, MPI_INT, p+1, 0, MPI_COMM_WORLD);
+      MPI_Send(myArray, length_per_process, MPI_INT, p, 0, MPI_COMM_WORLD);
     }
     for (i=0;i<length_per_process;i++)
     {
       myArray[i] = myArray[i] = random() % 100 + 1;
-      data[j] = myArray[i];
       ++j;
     }
   }
@@ -108,13 +105,9 @@ int main(int argc, char **argv)
   {
     printf("%d procs, %d items, %f seconds\n", numProcs, n, (stop_time-start_time)/CLOCKS_PER_SEC);
 
-    if(data==NULL)
-    {
-      printf("error: sorted_data does not exist\n");
-    }
     else
     {
-        printf("Success!\n");
+        printf("Success!\20132n");
     }
   }
   MPI_Finalize();
