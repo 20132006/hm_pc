@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <mpi.h>
+#include <time.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv)
+{
+	int* data;
+	int m, n, myID, p, i, numProcs, globalCount;
+  int RootProcess=0;
+	//Added by Alibek-
+	int length_per_process=0;
+	int *sub_data;
+	int *myArray;
+	int level;
+	//-----------------
+	MPI_Status status;
+
+	if (argc != 2) {
+		printf("usage: %s <num_items>\n", argv[0]);
+		return 1;
+	}
+
+	// Number of items to be sorted
+	n = atoi(argv[1]);
+
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &myID);
+	MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
+  length_per_process = n/numProcs;
+  myArray = (int *) malloc(length_per_process*sizeof(int));
+  data = (int *)malloc(n*sizeof(int));
+  j=0;
+
+  /*Read the data, distribute it among the various processes*/
+	if(myId==RootProcess)
+	{
+  		// data generation
+  		srandom(0);
+  		// Make sure that n is a multiple of p
+  		data = (int *)malloc(n*sizeof(int));
+  		for(p=0; p<numProcs-1; p++)
+      {
+          for (i=0;i<length_per_process;i++)
+          {
+              myArray[i] = random() % 100 + 1;
+              data[j] = myArray[i];
+              ++j;
+          }
+          MPI_Send(myArray, length_per_process, MPI_INT, p+1, 0, MPI_COMM_WORLD);
+      }
+      for (i=0;i<length_per_process;i++)
+      {
+          myArray[i] = myArray[i] = random() % 100 + 1;
+          data[j] = myArray[i];
+          ++j;
+      }
+	}
+	else
+	{
+      MPI_Recv(myArray, length_per_process, MPI_INT, RootProcess, 0, MPI_COMM_WORLD, &status);
+	}
+
+  start_time = clock();
+	/*
+  level = 1;
+	while( level < p )
+	{
+		if(id % (2*level) == 0)
+		{
+			if( id+level < p )
+			{
+				MPI_Recv(&m, 1 , MPI_INT,id+level,0,MPI_COMM_WORLD,&status);
+				sub_data1 = (int *)malloc(m*sizeof(int));
+				MPI_Recv(sub_data1,m,MPI_INT,id+level,0,MPI_COMM_WORLD,&status);
+				sub_data = merge(sub_data,sub_data1, length_per_process,m);
+				length_per_process = length_per_process + m;
+			}
+		}
+		else
+		{
+			int neighborhood = id-level;
+			MPI_Send(&length_per_process,1,MPI_INT,neighborhood,0,MPI_COMM_WORLD);
+			MPI_Send(sub_data,length_per_process,MPI_INT,neighborhood,0,MPI_COMM_WORLD);
+			break;
+		}
+		level = level*2;
+	}
+  */
+  
+  //Do the actual work
+  for (i=0;i<length_per_process;i++)
+  {
+      if (myArray[i] == 3)
+      {
+          myCount++;
+      }
+  }
+  MPI_Reduce(&myCount, &globalCount, 1, MPI_INT, MPI_SUM, RootProcess, MPI_COMM_WORLD);
+
+	stop_time = clock();
+
+	if (myId == RootProcess)
+	{
+		FILE * fp;
+
+		printf("%d procs, %d items, %f seconds\n", p, n, (stop_time-start_time)/CLOCKS_PER_SEC);
+
+		if(data==NULL)
+    {
+			   printf("error: sorted_data does not exist\n");
+		}
+		else
+    {
+        int counter = 0;
+  			for(i = 0; i < n - 1; i++)
+        {
+  				  if(data[i] == 3)
+                counter ++;
+  			}
+        if (counter != globalCount)
+            printf("error: sorted_data[%d] is greater than sorted_data[%d]\n",i,i+1);
+        else
+            printf("Success!\n");
+		}
+	}
+	MPI_Finalize();
+}
