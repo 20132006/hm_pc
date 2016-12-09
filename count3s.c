@@ -34,7 +34,6 @@ int main(int argc, char **argv)
   length_per_process = n/numProcs;
   myArray = (int *) malloc(length_per_process*sizeof(int));
 
-  j=0;
   /*Read the data, distribute it among the various processes*/
   if(myID==RootProcess)
   {
@@ -104,11 +103,8 @@ int main(int argc, char **argv)
   if (myID == RootProcess)
   {
     printf("%d procs, %d items, %f seconds\n", numProcs, n, (stop_time-start_time)/CLOCKS_PER_SEC);
-
-    else
-    {
-        printf("Success!\20132n");
-    }
+    printf("Success!\n");
   }
   MPI_Finalize();
+  return 0;
 }
