@@ -33,6 +33,7 @@ int main(int argc, char **argv)
 
   length_per_process = n/numProcs;
   myArray = (int *) malloc(length_per_process*sizeof(int));
+  printf("Terminated here");
 
   /*Read the data, distribute it among the various processes*/
   if(myID==RootProcess)
