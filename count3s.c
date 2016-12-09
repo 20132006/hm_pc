@@ -12,7 +12,7 @@ int level;
 int main(int argc, char **argv)
 {
   int* data;
-  int  n, myID, p, j, i, numProcs;
+  int  m, n, myID, p, j, i, numProcs;
   int RootProcess=0;
   //Added by Alibek-
   length_per_process=0;
@@ -63,31 +63,6 @@ int main(int argc, char **argv)
   }
 
   start_time = clock();
-  /*
-  level = 1;
-  while( level < p )
-  {
-    if(id % (2*level) == 0)
-    {
-      if( id+level < p )
-      {
-        MPI_Recv(&m, 1 , MPI_INT,id+level,0,MPI_COMM_WORLD,&status);
-        sub_data1 = (int *)malloc(m*sizeof(int));
-        MPI_Recv(sub_data1,m,MPI_INT,id+level,0,MPI_COMM_WORLD,&status);
-        sub_data = merge(sub_data,sub_data1, length_per_process,m);
-        length_per_process = length_per_process + m;
-      }
-    }
-    else
-    {
-      int neighborhood = id-level;
-      MPI_Send(&length_per_process,1,MPI_INT,neighborhood,0,MPI_COMM_WORLD);
-      MPI_Send(sub_data,length_per_process,MPI_INT,neighborhood,0,MPI_COMM_WORLD);
-      break;
-    }
-    level = level*2;
-  }
-  */
   //Do the actual work
   for (i=0;i<length_per_process;i++)
   {
@@ -96,12 +71,37 @@ int main(int argc, char **argv)
       myCount++;
     }
   }
-  MPI_Reduce(&myCount, &globalCount, 1, MPI_INT, MPI_SUM, RootProcess, MPI_COMM_WORLD);
+
+  printf("Number of 3s %d, MyID %d\n", myCount,myID);
+
+  //Costom MPI-reduce()
+  level = 1;
+  while( level < p )
+  {
+    if(id % (2*level) == 0)
+    {
+      if( id+level < p )
+      {
+        MPI_Recv(&m, 1 , MPI_INT,id+level,0,MPI_COMM_WORLD,&status);
+        myCount += m;
+      }
+    }
+    else
+    {
+      int neighborhood = id-level;
+      MPI_Send(&myCount,1,MPI_INT,neighborhood,0,MPI_COMM_WORLD);
+      break;
+    }
+    level = level*2;
+  }
+
+  //MPI_Reduce(&myCount, &globalCount, 1, MPI_INT, MPI_SUM, RootProcess, MPI_COMM_WORLD);
 
   stop_time = clock();
 
   if (myID == RootProcess)
   {
+    printf("RootProcess myCount %d\n", myCount);
     printf("%d procs, %d items, %f seconds\n", numProcs, n, (stop_time-start_time)/CLOCKS_PER_SEC);
     printf("Success!\n");
   }
