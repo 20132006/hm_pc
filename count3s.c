@@ -76,19 +76,19 @@ int main(int argc, char **argv)
 
   //Costom MPI-reduce()
   level = 1;
-  while( level < p )
+  while( level < numProcs )
   {
-    if(id % (2*level) == 0)
+    if(myID % (2*level) == 0)
     {
-      if( id+level < p )
+      if( myID+level < numProcs )
       {
-        MPI_Recv(&m, 1 , MPI_INT,id+level,0,MPI_COMM_WORLD,&status);
+        MPI_Recv(&m, 1 , MPI_INT,myID+level,0,MPI_COMM_WORLD,&status);
         myCount += m;
       }
     }
     else
     {
-      int neighborhood = id-level;
+      int neighborhood =  myID-level;
       MPI_Send(&myCount,1,MPI_INT,neighborhood,0,MPI_COMM_WORLD);
       break;
     }
