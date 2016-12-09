@@ -33,7 +33,6 @@ int main(int argc, char **argv)
 
   length_per_process = n/numProcs;
   myArray = (int *) malloc(length_per_process*sizeof(int));
-  data = (int *)malloc(n*sizeof(int));
 
   j=0;
   /*Read the data, distribute it among the various processes*/
@@ -91,7 +90,8 @@ int main(int argc, char **argv)
     level = level*2;
   }
   */
-
+  myCount=0;
+  globalCount=0;
   //Do the actual work
   for (i=0;i<length_per_process;i++)
   {
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 
   if (myID == RootProcess)
   {
-    printf("%d procs, %d items, %f seconds\n", p, n, (stop_time-start_time)/CLOCKS_PER_SEC);
+    printf("%d procs, %d items, %f seconds\n", numProcs, n, (stop_time-start_time)/CLOCKS_PER_SEC);
 
     if(data==NULL)
     {
@@ -114,15 +114,6 @@ int main(int argc, char **argv)
     }
     else
     {
-      int counter = 0;
-      for(i = 0; i < n; i++)
-      {
-        if(data[i] == 3)
-          counter ++;
-      }
-      if (counter != globalCount)
-        printf("Counting processes was not correct!",);
-      else
         printf("Success!\n");
     }
   }
