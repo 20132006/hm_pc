@@ -16,7 +16,7 @@ int main(int argc, char **argv)
   int RootProcess=0;
   //Added by Alibek-
   length_per_process=0;
-  
+
   //-----------------
   MPI_Status status;
 
@@ -105,6 +105,9 @@ int main(int argc, char **argv)
     printf("%d procs, %d items, %f seconds\n", numProcs, n, (stop_time-start_time)/CLOCKS_PER_SEC);
     printf("Success!\n");
   }
+
+  free(myArray);
+  MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
   return 0;
 }
